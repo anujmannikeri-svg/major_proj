@@ -17,7 +17,7 @@ router.post('/', authMiddleware, roleMiddleware(['Admin']), async (req, res) => 
 // GET /exams -> Admin, Student
 router.get('/', authMiddleware, async (req, res) => {
     try {
-        const exams = await Exam.find().select('-questions.correctAnswer');
+        const exams = await Exam.find().select('-questions.correctAnswer -questions.correctTextAnswer');
         // Optimization: Don't send correct answers to students in the list view
         res.json(exams);
     } catch (err) {
@@ -34,7 +34,10 @@ router.get('/:id', authMiddleware, async (req, res) => {
         // Students shouldn't see correct answers before submission
         const examData = exam.toObject();
         if (req.user.role !== 'Admin') {
-            examData.questions.forEach(q => delete q.correctAnswer);
+            examData.questions.forEach(q => {
+                delete q.correctAnswer;
+                delete q.correctTextAnswer;
+            });
         }
 
         res.json(examData);
@@ -71,6 +74,29 @@ router.get('/results/:examId', authMiddleware, roleMiddleware(['Admin']), async 
         const Submission = require('../models/Submission');
         const results = await Submission.find({ exam: req.params.examId }).populate('student', 'name email');
         res.json(results);
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// GET /exam-status/:examId -> Student - check remaining attempts
+router.get('/exam-status/:examId', authMiddleware, roleMiddleware(['Student']), async (req, res) => {
+    try {
+        const Submission = require('../models/Submission');
+        const exam = await Exam.findById(req.params.examId);
+        if (!exam) return res.status(404).json({ message: 'Exam not found' });
+
+        const attempts = await Submission.countDocuments({
+            exam: req.params.examId,
+            student: req.user.id
+        });
+
+        res.json({
+            attempts,
+            maxAttempts: exam.maxAttempts || 1,
+            remainingAttempts: Math.max(0, (exam.maxAttempts || 1) - attempts),
+            canAttempt: attempts < (exam.maxAttempts || 1)
+        });
     } catch (err) {
         res.status(500).json({ message: 'Server error' });
     }
