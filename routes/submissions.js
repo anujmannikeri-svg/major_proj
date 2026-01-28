@@ -39,7 +39,21 @@ router.post('/:examId', authMiddleware, roleMiddleware(['Student']), async (req,
 // GET /my-results -> Student
 router.get('/my-results', authMiddleware, roleMiddleware(['Student']), async (req, res) => {
     try {
-        const results = await Submission.find({ student: req.user.id }).populate('exam', 'title date');
+        const results = await Submission.find({ student: req.user.id }).populate('exam', 'title date duration');
+        res.json(results);
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// GET /student/:studentId -> Admin - per-student analytics and history
+router.get('/student/:studentId', authMiddleware, roleMiddleware(['Admin']), async (req, res) => {
+    try {
+        const { studentId } = req.params;
+        const results = await Submission.find({ student: studentId })
+            .populate('exam', 'title date duration')
+            .sort({ submittedAt: 1 });
+
         res.json(results);
     } catch (err) {
         res.status(500).json({ message: 'Server error' });
