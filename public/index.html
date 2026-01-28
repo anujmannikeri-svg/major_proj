@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Exam Portal | Premium Backend</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="toast"></div>
+
+    <!-- Auth View -->
+    <div id="auth-view" class="auth-container">
+        <div class="glass-card auth-card">
+            <div class="auth-header">
+                <h1 id="auth-title">Login</h1>
+                <p id="auth-subtitle">Welcome back! Please enter your details.</p>
+            </div>
+            <form id="auth-form">
+                <div id="name-group" class="input-group hidden">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" placeholder="John Doe">
+                </div>
+                <div class="input-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" required placeholder="name@company.com">
+                </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required placeholder="••••••••">
+                </div>
+                <div id="role-group" class="input-group hidden">
+                    <label for="role">Account Type</label>
+                    <select id="role">
+                        <option value="Student">Student</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Continue</button>
+            </form>
+            <div class="auth-toggle">
+                <p id="toggle-text">Don't have an account? <span id="switch-auth">Sign Up</span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App View -->
+    <div id="app-view" class="hidden">
+        <nav class="navbar">
+            <div class="logo">ExaMinds</div>
+            <div class="nav-links">
+                <span id="user-display" style="margin-right: 20px;"></span>
+                <button id="logout-btn" class="btn" style="background: rgba(255,255,255,0.1)">Logout</button>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <!-- Admin Dashboard -->
+            <div id="admin-dashboard" class="hidden">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                    <h2>Active Examinations</h2>
+                    <button id="create-exam-btn" class="btn btn-primary">Create New Exam</button>
+                </div>
+                <div id="admin-exam-list" class="exam-grid"></div>
+            </div>
+
+            <!-- Student Dashboard -->
+            <div id="student-dashboard" class="hidden">
+                <div class="tabs" style="margin-bottom: 30px;">
+                    <button class="btn active-tab" data-tab="available">Available Exams</button>
+                    <button class="btn" data-tab="results">My Results</button>
+                </div>
+                <div id="student-exam-list" class="exam-grid"></div>
+                <div id="student-results-list" class="exam-grid hidden"></div>
+            </div>
+
+            <!-- Exam View -->
+            <div id="exam-taking-view" class="hidden">
+                <div class="glass-card" style="padding: 40px; max-width: 800px; margin: 0 auto;">
+                    <h2 id="current-exam-title"></h2>
+                    <div id="questions-container" style="margin-top: 30px;"></div>
+                    <button id="submit-exam-btn" class="btn btn-primary" style="margin-top: 30px; width: 100%;">Submit
+                        Exam</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals (Simple overlays) -->
+    <div id="modal-overlay" class="hidden"
+        style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px;">
+        <div id="modal-content" class="glass-card" style="width: 100%; max-width: 600px; padding: 30px;">
+            <!-- Content injected via JS -->
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
