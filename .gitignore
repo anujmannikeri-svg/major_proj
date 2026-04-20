@@ -24,6 +24,9 @@ coverage/
 dist/
 build/
 
+# Uploaded media
+storage/
+
 # OS generated files
 .DS_Store
 Thumbs.db

@@ -7,6 +7,15 @@ const submissionSchema = new mongoose.Schema({
     attempt: { type: Number, default: 1 },
     marks: { type: Number, default: 0 },
     passed: { type: Boolean, default: false },
+    // Recorded verification video for the attempt.
+    // New submissions store files in MongoDB GridFS and save fileId metadata here.
+    video: {
+        fileId: { type: mongoose.Schema.Types.ObjectId, default: null },
+        path: { type: String, default: null },
+        mimeType: { type: String, default: null },
+        originalName: { type: String, default: null },
+        size: { type: Number, default: null }
+    },
     submittedAt: { type: Date, default: Date.now }
 });
 
