@@ -85,10 +85,9 @@ app.get("/", (req, res) => {
 });
 
 // Routes
-app.use("/auth", require("./routes/auth"));
-app.use("/exams", require("./routes/exams"));
-// Submission/Results routes can be part of exams or separate
-app.use("/submit", require("./routes/submissions"));
+app.use("/api/auth", require("./routes/auth"));
+app.use("/api/exams", require("./routes/exams"));
+app.use("/api/submit", require("./routes/submissions"));
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server is running on port ${PORT}`);
