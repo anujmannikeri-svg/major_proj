@@ -4,7 +4,7 @@ function App() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    fetch(process.env.REACT_APP_API_URL + "/api/exams")
+    fetch("https://major-proj-adz6.onrender.com/exams")
       .then(res => res.json())
       .then(data => setData(data))
       .catch(err => console.log(err));
