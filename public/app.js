@@ -42,23 +42,7 @@ function isLocalHostName(hostname) {
 }
 
 async function resolveShareBaseUrl() {
-    if (cachedShareBaseUrl) return cachedShareBaseUrl;
-    if (!isLocalHostName(window.location.hostname)) {
-        cachedShareBaseUrl = window.location.origin;
-        return cachedShareBaseUrl;
-    }
-
-    try {
-        const res = await fetch(`${API_URL}/api/public-base-url`);
-        const data = await res.json().catch(() => ({}));
-        if (res.ok && data.baseUrl) {
-            cachedShareBaseUrl = String(data.baseUrl).replace(/\/+$/, '');
-            return cachedShareBaseUrl;
-        }
-    } catch {
-        // ignore and fallback
-    }
-    throw new Error('Could not determine LAN URL. Set PUBLIC_BASE_URL in .env');
+    return 'https://major-proj-adz6.onrender.com';
 }
 
 // DOM Elements
