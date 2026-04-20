@@ -8,6 +8,7 @@ const os = require("os");
 dotenv.config();
 
 const app = express();
+app.set("trust proxy", true);
 app.use(express.json());
 app.use(cors());
 app.use(express.static("public"));
@@ -54,6 +55,19 @@ app.get("/api/public-base-url", (req, res) => {
     return res.json({ baseUrl: configured });
   }
 
+  const host = req.get("host") || `localhost:${PORT}`;
+  const protocol = req.protocol || "http";
+  const hostnameOnly = host.split(":")[0].toLowerCase();
+  const isLocalRequestHost =
+    hostnameOnly === "localhost" ||
+    hostnameOnly === "127.0.0.1" ||
+    hostnameOnly === "::1";
+
+  // In deployed environments, always trust the incoming public host/protocol.
+  if (!isLocalRequestHost) {
+    return res.json({ baseUrl: `${protocol}://${host}`, warning: null });
+  }
+
   const interfaces = os.networkInterfaces();
   const ipv4Candidates = [];
   Object.values(interfaces).forEach((entries) => {
@@ -71,8 +85,6 @@ app.get("/api/public-base-url", (req, res) => {
   );
   const lanIp = privateIpv4 || ipv4Candidates.find((ip) => !/^169\.254\./.test(ip)) || null;
 
-  const protocol = req.protocol || "http";
-  const host = req.get("host") || `localhost:${PORT}`;
   const port = host.includes(":") ? host.split(":")[1] : String(PORT);
   const baseUrl = lanIp ? `${protocol}://${lanIp}:${port}` : null;
 
@@ -85,9 +97,10 @@ app.get("/", (req, res) => {
 });
 
 // Routes
-app.use("/api/auth", require("./routes/auth"));
-app.use("/api/exams", require("./routes/exams"));
-app.use("/api/submit", require("./routes/submissions"));
+app.use("/auth", require("./routes/auth"));
+app.use("/exams", require("./routes/exams"));
+// Submission/Results routes can be part of exams or separate
+app.use("/submit", require("./routes/submissions"));
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server is running on port ${PORT}`);

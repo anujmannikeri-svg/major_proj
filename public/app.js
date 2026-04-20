@@ -1,4 +1,6 @@
-const API_URL = window.location.origin;
+const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') 
+    ? 'http://localhost:8080' 
+    : 'https://major-proj-adz6.onrender.com';
 let token = localStorage.getItem('token');
 let user = JSON.parse(localStorage.getItem('user'));
 let cachedShareBaseUrl = null;
