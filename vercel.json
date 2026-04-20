@@ -1,0 +1,6 @@
+{
+  "version": 2,
+  "outputDirectory": "public",
+  "buildCommand": "echo 'No build required for Vanilla JS'",
+  "framework": null
+}
