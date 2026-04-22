@@ -2131,7 +2131,10 @@ window.watchSubmissionVideo = async (submissionId) => {
             <video controls autoplay style="width: 100%; max-height: 70vh; margin-top: 12px; border-radius: 10px;" src="${videoUrl}">
                 Your browser does not support the video tag.
             </video>
-            <button class="btn btn-primary" onclick="closeModal()" style="width: 100%; margin-top: 15px;">Close</button>
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button class="btn btn-primary" onclick="closeModal()" style="flex: 1;">Close</button>
+                <a href="${videoUrl}" download="exam_video_${submissionId}.mp4" class="btn btn-ghost" style="flex: 1; text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; background: var(--primary); color: white;">Download Video</a>
+            </div>
         `;
         overlay.classList.remove('hidden');
 
