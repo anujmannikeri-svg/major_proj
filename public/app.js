@@ -1351,7 +1351,9 @@ function pickMediaRecorderMimeType() {
     const candidates = [
         'video/webm;codecs=vp9',
         'video/webm;codecs=vp8',
-        'video/webm'
+        'video/webm',
+        'video/mp4;codecs=avc1', // Force H.264 for maximum PC/Mac compatibility
+        'video/mp4'
     ];
     for (const mimeType of candidates) {
         if (window.MediaRecorder && window.MediaRecorder.isTypeSupported && window.MediaRecorder.isTypeSupported(mimeType)) {
