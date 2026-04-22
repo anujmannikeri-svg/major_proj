@@ -2111,18 +2111,35 @@ window.viewResults = async (examId) => {
 
 window.watchSubmissionVideo = async (submissionId) => {
     try {
-        const videoUrl = `${API_URL}/submit/video/${submissionId}?token=${token}`;
+        const res = await fetch(`${API_URL}/submit/video/${submissionId}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!res.ok) {
+            const data = await res.json().catch(() => ({}));
+            showToast(data.message || 'Unable to load submission video', 'error');
+            return;
+        }
+
+        const blob = await res.blob();
+        const videoUrl = URL.createObjectURL(blob);
         const overlay = document.getElementById('modal-overlay');
         const content = document.getElementById('modal-content');
 
         content.innerHTML = `
             <h2>Submission Video</h2>
-            <video controls autoplay preload="metadata" style="width: 100%; max-height: 70vh; margin-top: 12px; border-radius: 10px;" src="${videoUrl}">
+            <video controls autoplay style="width: 100%; max-height: 70vh; margin-top: 12px; border-radius: 10px;" src="${videoUrl}">
                 Your browser does not support the video tag.
             </video>
             <button class="btn btn-primary" onclick="closeModal()" style="width: 100%; margin-top: 15px;">Close</button>
         `;
         overlay.classList.remove('hidden');
+
+        const cleanup = () => URL.revokeObjectURL(videoUrl);
+        setTimeout(() => {
+            const closeBtn = content.querySelector('button');
+            if (closeBtn) closeBtn.addEventListener('click', cleanup, { once: true });
+        }, 0);
     } catch (err) {
         showToast('Unable to load submission video', 'error');
     }
