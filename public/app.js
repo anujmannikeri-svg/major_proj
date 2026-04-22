@@ -309,7 +309,12 @@ async function fetchExamsAdmin() {
         const res = await fetch(`${API_URL}/exams`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        const exams = await res.json();
+        let exams = await res.json();
+        
+        if (user && user.role === 'Expert') {
+            exams = exams.filter(exam => exam.createdBy === user.id || exam.createdBy === user._id);
+        }
+
         const list = document.getElementById('admin-exam-list');
         list.innerHTML = exams.map(exam => {
             const isExpert = exam.moduleType === 'Expert';
