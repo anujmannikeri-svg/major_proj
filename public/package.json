@@ -1,0 +1,8 @@
+{
+  "name": "static-frontend",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "echo 'No build necessary for Vanilla JS'",
+    "start": "echo 'Vercel will serve files statically'"
+  }
+}
