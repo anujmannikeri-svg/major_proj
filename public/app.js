@@ -1224,7 +1224,8 @@ async function submitExam(examId, qCount, isAuto = false) {
 
         const formData = new FormData();
         formData.append('answers', JSON.stringify(answers));
-        formData.append('video', recordedVideoBlob, `exam_${examId}_${Date.now()}.webm`);
+        const ext = (recordedVideoBlob.type && recordedVideoBlob.type.includes('mp4')) ? 'mp4' : 'webm';
+        formData.append('video', recordedVideoBlob, `exam_${examId}_${Date.now()}.${ext}`);
 
         const res = await fetch(`${API_URL}/submit/${examId}`, {
             method: 'POST',
@@ -2125,8 +2126,7 @@ window.watchSubmissionVideo = async (submissionId) => {
 
         content.innerHTML = `
             <h2>Submission Video</h2>
-            <video controls autoplay style="width: 100%; max-height: 70vh; margin-top: 12px; border-radius: 10px;">
-                <source src="${videoUrl}" type="${blob.type || 'video/webm'}">
+            <video controls autoplay style="width: 100%; max-height: 70vh; margin-top: 12px; border-radius: 10px;" src="${videoUrl}">
                 Your browser does not support the video tag.
             </video>
             <button class="btn btn-primary" onclick="closeModal()" style="width: 100%; margin-top: 15px;">Close</button>
