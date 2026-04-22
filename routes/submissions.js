@@ -353,16 +353,43 @@ router.get('/video/:submissionId', authMiddleware, roleMiddleware(['Admin']), as
             const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, { bucketName: 'submissionVideos' });
             const objectId = typeof fileId === 'string' ? new mongoose.Types.ObjectId(fileId) : fileId;
 
-            res.setHeader('Content-Type', mimeType || 'video/webm');
-            if (originalName) {
-                res.setHeader('Content-Disposition', `inline; filename="${String(originalName).replace(/"/g, '')}"`);
+            const files = await bucket.find({ _id: objectId }).toArray();
+            if (!files || files.length === 0) {
+                return res.status(404).json({ message: 'Stored video file not found' });
             }
 
-            const readStream = bucket.openDownloadStream(objectId);
-            readStream.on('error', () => {
-                if (!res.headersSent) res.status(404).json({ message: 'Stored video file not found' });
-            });
-            return readStream.pipe(res);
+            const fileSize = files[0].length;
+            const range = req.headers.range;
+
+            if (range) {
+                const parts = range.replace(/bytes=/, "").split("-");
+                const start = parseInt(parts[0], 10);
+                const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+                const chunksize = (end - start) + 1;
+
+                res.writeHead(206, {
+                    'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+                    'Accept-Ranges': 'bytes',
+                    'Content-Length': chunksize,
+                    'Content-Type': mimeType || 'video/webm',
+                });
+
+                const readStream = bucket.openDownloadStream(objectId, { start, end: end + 1 });
+                readStream.on('error', () => {
+                    if (!res.headersSent) res.end();
+                });
+                return readStream.pipe(res);
+            } else {
+                res.writeHead(200, {
+                    'Content-Length': fileSize,
+                    'Content-Type': mimeType || 'video/webm',
+                });
+                const readStream = bucket.openDownloadStream(objectId);
+                readStream.on('error', () => {
+                    if (!res.headersSent) res.end();
+                });
+                return readStream.pipe(res);
+            }
         }
 
         // Backward compatibility: stream legacy files stored on disk.
