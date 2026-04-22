@@ -42,7 +42,7 @@ function isLocalHostName(hostname) {
 }
 
 async function resolveShareBaseUrl() {
-    return 'https://major-proj-adz6.onrender.com';
+    return 'https://major-proj-six.vercel.app';
 }
 
 // DOM Elements

@@ -103,6 +103,33 @@ router.post('/:examId', authMiddleware, roleMiddleware(['Student']), upload.sing
 
         const passed = submissionPassed(marks, exam);
 
+        let videoData = {
+            path: req.file.filename,
+            mimeType: req.file.mimetype,
+            originalName: req.file.originalname,
+            size: req.file.size || null
+        };
+
+        if (mongoose.connection.db) {
+            const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, { bucketName: 'submissionVideos' });
+            const uploadStream = bucket.openUploadStream(videoData.originalName || `exam_${req.params.examId}_${Date.now()}.webm`, {
+                contentType: videoData.mimeType
+            });
+            const readStream = fs.createReadStream(req.file.path);
+            
+            await new Promise((resolve, reject) => {
+                readStream.pipe(uploadStream)
+                    .on('error', reject)
+                    .on('finish', resolve);
+            });
+            
+            videoData.fileId = uploadStream.id;
+            
+            fs.unlink(req.file.path, (err) => {
+                if (err) console.error('Failed to delete temp video file:', err);
+            });
+        }
+
         const submission = new Submission({
             exam: req.params.examId,
             student: req.user.id,
@@ -110,12 +137,7 @@ router.post('/:examId', authMiddleware, roleMiddleware(['Student']), upload.sing
             attempt,
             marks,
             passed,
-            video: {
-                path: req.file.filename,
-                mimeType: req.file.mimetype,
-                originalName: req.file.originalname,
-                size: req.file.size || null
-            }
+            video: videoData
         });
 
         await submission.save();
