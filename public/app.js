@@ -1390,8 +1390,8 @@ async function startExamCamera() {
                     }
                 };
 
-                // Start as soon as possible; collect chunks in background.
-                mediaRecorder.start(1000);
+                // Start without timeslice to prevent iOS Safari from corrupting the MP4 'moov' atom.
+                mediaRecorder.start();
             } catch {
                 // Leave recorder null; submit will fail gracefully below.
             }
