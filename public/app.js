@@ -2133,7 +2133,7 @@ window.watchSubmissionVideo = async (submissionId) => {
             </video>
             <div style="display: flex; gap: 10px; margin-top: 15px;">
                 <button class="btn btn-primary" onclick="closeModal()" style="flex: 1;">Close</button>
-                <a href="${videoUrl}" download="exam_video_${submissionId}.mp4" class="btn btn-ghost" style="flex: 1; text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; background: var(--primary); color: white;">Download Video</a>
+                <a href="${videoUrl}" download="exam_video_${submissionId}.webm" class="btn btn-ghost" style="flex: 1; text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; background: var(--primary); color: white;">Download Video</a>
             </div>
         `;
         overlay.classList.remove('hidden');
